@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="sr">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Školski Kutak — demo | Prijava</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="css/login.css"/>
+  </head>
+  <body>
+      
+<div class="login-container">
+
+  <h2>Školski Kutak · demo</h2>
+  <p><strong>Nezavisna demonstracija.</strong> Ne unosite korisničke podatke sa zvaničnog eDnevnika.</p>
+  <p><a href="https://moj.esdnevnik.rs/" target="_blank" rel="noopener noreferrer">Zvanični eDnevnik portal</a></p>
+
+<form id="loginForm">
+
+<div class="input-group">
+<label for="username">Korisničko ime</label>
+<input type="text" id="username" name="username" autocomplete="username" required placeholder="Unesi demo korisničko ime">
+
+</div>
+
+<div class="input-group">
+<label for="password">Lozinka</label>
+<input type="password" id="password" name="password" autocomplete="current-password" required placeholder="Unesi demo lozinku">
+
+</div>
+
+<p id="errorMsg" role="alert" style="display: none; color: #c53030; margin-bottom: 12px;">Pogrešno korisničko ime ili lozinka.</p>
+
+<button type="submit" id="loginButton" class="login-btn">Prijavi se</button>
+
+<p>Koristite samo nalog namenjen ovoj demonstraciji.</p>
+
+
+</form>
+
+</div>
+<script src="script1.js"></script>
+  </body>
+</html>

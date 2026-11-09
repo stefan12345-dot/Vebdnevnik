@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Školski Kutak — demo | Raspored</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; background: #f4f6f9; color: #263445; font-family: Arial, sans-serif; }
+        header { background: #1a4a75; color: white; padding: 18px 24px; }
+        header h1 { margin: 0; font-size: 22px; }
+        nav { display: flex; gap: 8px; padding: 0 24px; background: white; border-bottom: 1px solid #dce3ea; overflow-x: auto; }
+        nav a { padding: 15px 16px; color: #4a5568; text-decoration: none; white-space: nowrap; border-bottom: 3px solid transparent; }
+        nav a:hover, nav a.active { color: #1a4a75; border-bottom-color: #1a4a75; }
+        main { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
+        h2 { margin: 0 0 6px; color: #1a4a75; }
+        .muted { margin: 0; color: #718096; }
+        .card { margin-top: 22px; background: white; border: 1px solid #e2e8f0; border-radius: 9px; box-shadow: 0 3px 10px rgba(26, 74, 117, .05); overflow: hidden; }
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; min-width: 760px; border-collapse: collapse; }
+        th, td { padding: 14px 12px; border: 1px solid #e7edf2; text-align: center; }
+        thead th { background: #edf4fa; color: #1a4a75; }
+        tbody th { background: #f8fafc; color: #4a5568; white-space: nowrap; }
+        .lesson { display: block; margin-bottom: 4px; font-weight: bold; color: #1a4a75; }
+        .room { color: #718096; font-size: 12px; }
+        .break { background: #f8fafc; color: #718096; font-size: 13px; }
+        .note { padding: 14px 16px; color: #718096; font-size: 13px; }
+        @media (max-width: 600px) { header { padding: 16px; } nav { padding: 0 6px; } nav a { padding: 13px 10px; } main { margin-top: 22px; padding: 0 12px; } }
+    </style>
+    <link rel="stylesheet" href="common-header.css">
+</head>
+<body>
+    <header class="app-header"><h1 class="app-brand">Školski Kutak · demo</h1><div class="app-selectors"><select id="headerSchool" aria-label="Škola"></select><select id="headerYear" aria-label="Školska godina"></select><select id="headerClass" aria-label="Odeljenje"></select><select id="headerSubject" aria-label="Predmet"></select></div></header>
+    <nav class="app-nav" aria-label="Glavna navigacija">
+        <a href="dashboard.html">Početna</a>
+        <a href="imenik.html">Imenik</a>
+        <a href="dnevnik-rada.html">Dnevnik rada</a>
+        <a href="raspored.html" class="active" aria-current="page">Raspored</a>
+        <a href="administracija.html">Administracija</a>
+    </nav>
+    <main>
+        <h2>Nedeljni raspored</h2>
+        <p class="muted">Odeljenje VIII-2 · Školska 2024/2025. godina</p>
+        <section class="card">
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Čas</th><th>Ponedeljak</th><th>Utorak</th><th>Sreda</th><th>Četvrtak</th><th>Petak</th></tr></thead>
+                    <tbody>
+                        <tr><th>1. čas<br>08:00–08:45</th><td><span class="lesson">Matematika</span><span class="room">Učionica 12</span></td><td><span class="lesson">Srpski jezik</span><span class="room">Učionica 8</span></td><td><span class="lesson">Engleski jezik</span><span class="room">Učionica 15</span></td><td><span class="lesson">Biologija</span><span class="room">Kabinet 3</span></td><td><span class="lesson">Istorija</span><span class="room">Učionica 8</span></td></tr>
+                        <tr><th>2. čas<br>08:50–09:35</th><td><span class="lesson">Srpski jezik</span><span class="room">Učionica 8</span></td><td><span class="lesson">Matematika</span><span class="room">Učionica 12</span></td><td><span class="lesson">Fizika</span><span class="room">Kabinet 2</span></td><td><span class="lesson">Matematika</span><span class="room">Učionica 12</span></td><td><span class="lesson">Geografija</span><span class="room">Učionica 10</span></td></tr>
+                        <tr><td colspan="6" class="break">Veliki odmor · 09:35–09:55</td></tr>
+                        <tr><th>3. čas<br>09:55–10:40</th><td><span class="lesson">Biologija</span><span class="room">Kabinet 3</span></td><td><span class="lesson">Istorija</span><span class="room">Učionica 8</span></td><td><span class="lesson">Matematika</span><span class="room">Učionica 12</span></td><td><span class="lesson">Srpski jezik</span><span class="room">Učionica 8</span></td><td><span class="lesson">Engleski jezik</span><span class="room">Učionica 15</span></td></tr>
+                        <tr><th>4. čas<br>10:45–11:30</th><td><span class="lesson">Fizičko</span><span class="room">Sala</span></td><td><span class="lesson">Likovna kultura</span><span class="room">Učionica 6</span></td><td><span class="lesson">Srpski jezik</span><span class="room">Učionica 8</span></td><td><span class="lesson">Fizika</span><span class="room">Kabinet 2</span></td><td><span class="lesson">Informatika</span><span class="room">Kabinet 1</span></td></tr>
+                        <tr><td colspan="6" class="break">Odmor · 11:30–11:40</td></tr>
+                        <tr><th>5. čas<br>11:40–12:25</th><td><span class="lesson">Geografija</span><span class="room">Učionica 10</span></td><td><span class="lesson">Hemija</span><span class="room">Kabinet 4</span></td><td><span class="lesson">Muzička kultura</span><span class="room">Učionica 5</span></td><td><span class="lesson">Engleski jezik</span><span class="room">Učionica 15</span></td><td><span class="lesson">Fizičko</span><span class="room">Sala</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="note">Primer rasporeda — podaci su demonstracioni.</p>
+        </section>
+    </main>
+<script src="common-header.js"></script>
+</body>
+</html>

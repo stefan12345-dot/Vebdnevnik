@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Školski Kutak — demo | Moj profil</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <link rel="stylesheet" href="common-header.css">
+  <style>
+    main{max-width:850px;margin:30px auto;padding:0 20px}.card{margin:18px 0;padding:22px;border:1px solid #1a4a75;border-radius:10px}.card h2{margin-top:0;color:#1a4a75}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field label{display:block;margin-bottom:6px;font-weight:bold}.field input{width:100%;padding:11px;border:1px solid #1a4a75;border-radius:6px;font:inherit}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}.btn{padding:10px 14px;border:0;border-radius:6px;background:#1a4a75;color:#fff;cursor:pointer}.status{margin-top:12px;color:#1a4a75}.secret{padding:12px;background:#f4f6f9;border:1px dashed #1a4a75;overflow-wrap:anywhere;font-family:monospace}.hint{line-height:1.5}.back{color:#1a4a75}@media(max-width:600px){main{padding:0 12px}.grid{grid-template-columns:1fr}.card{padding:16px}}
+  </style>
+</head>
+<body>
+<header class="app-header"><h1 class="app-brand">Školski Kutak · demo</h1><div class="app-selectors"><select id="headerSchool" aria-label="Škola"></select><select id="headerYear" aria-label="Školska godina"></select><select id="headerClass" aria-label="Odeljenje"></select><select id="headerSubject" aria-label="Predmet"></select></div></header>
+<nav class="app-nav" aria-label="Glavna navigacija"><a href="dashboard.html">Početna</a><a href="imenik.html">Imenik</a><a href="dnevnik-rada.html">Dnevnik rada</a><a href="raspored.html">Raspored</a><a href="administracija.html">Administracija</a></nav>
+<main>
+  <a class="back" href="dashboard.html">← Nazad</a><h1>Moj profil</h1>
+  <section class="card"><h2>Lični podaci</h2><form id="profileForm"><div class="grid">
+    <div class="field"><label for="name">Ime i prezime</label><input id="name" required></div>
+    <div class="field"><label for="username">Korisničko ime</label><input id="username" disabled></div>
+    <div class="field"><label for="email">E-pošta</label><input id="email" type="email" autocomplete="email"></div>
+    <div class="field"><label for="phone">Telefon</label><input id="phone" type="tel" autocomplete="tel"></div>
+  </div><div class="actions"><button class="btn" type="submit">Sačuvaj podatke</button></div></form><p class="status" id="profileStatus" role="status"></p></section>
+  <section class="card"><h2>Promena lozinke</h2><form id="passwordForm"><div class="grid">
+    <div class="field"><label for="oldPassword">Trenutna lozinka</label><input id="oldPassword" type="password" autocomplete="current-password" required></div>
+    <div class="field"><label for="newPassword">Nova lozinka (najmanje 8 znakova)</label><input id="newPassword" type="password" minlength="8" autocomplete="new-password" required></div>
+    <div class="field"><label for="confirmPassword">Ponovi novu lozinku</label><input id="confirmPassword" type="password" minlength="8" autocomplete="new-password" required></div>
+  </div><div class="actions"><button class="btn" type="submit">Promeni lozinku</button></div></form><p class="status" id="passwordStatus" role="status"></p></section>
+  <section class="card"><h2>Dvofaktorska zaštita (2FA)</h2><p class="hint">2FA koristi aplikaciju za autentifikaciju koja podržava TOTP. Sačuvaj prikazani ključ u toj aplikaciji, pa potvrdi da generiše ispravan kod.</p>
+    <p id="twofaState" class="hint"></p><button class="btn" id="setup2fa" type="button">Podesi 2FA</button><div id="setupPanel" hidden><p>Dodaj ovaj ključ u aplikaciju za autentifikaciju:</p><p class="secret" id="secret"></p><form id="enable2fa"><div class="field"><label for="setupCode">Šestocifreni kod iz aplikacije</label><input id="setupCode" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required></div><div class="actions"><button class="btn" type="submit">Uključi 2FA</button></div></form></div>
+    <form id="disable2fa" hidden><div class="field"><label for="disablePassword">Lozinka za isključivanje 2FA</label><input id="disablePassword" type="password" required></div><div class="actions"><button class="btn" type="submit">Isključi 2FA</button></div></form><p class="status" id="twofaStatus" role="status"></p>
+  </section>
+</main>
+<script>
+const token=localStorage.getItem('ednevnik-token');
+if(!token){location.href='../index.html';}
+const authHeaders={'Content-Type':'application/json','Authorization':`Bearer ${token}`};
+async function api(url,options={}){const response=await fetch('/api'+url,{...options,headers:{...authHeaders,...options.headers}});const result=await response.json();if(!response.ok)throw new Error(result.greska||'Zahtev nije uspeo.');return result;}
+function show(id,message){document.getElementById(id).textContent=message;}
+async function loadProfile(){try{const {korisnik}=await api('/profil');document.getElementById('name').value=korisnik.ime||'';document.getElementById('username').value=korisnik.korisnicko_ime||'';document.getElementById('email').value=korisnik.email||'';document.getElementById('phone').value=korisnik.telefon||'';localStorage.setItem('ednevnik-user',JSON.stringify(korisnik));document.getElementById('twofaState').textContent=korisnik.twofa_enabled?'2FA je uključena za ovaj nalog.':'2FA trenutno nije uključena.';document.getElementById('setup2fa').hidden=korisnik.twofa_enabled;document.getElementById('disable2fa').hidden=!korisnik.twofa_enabled;}catch(error){show('profileStatus',error.message);}}
+document.getElementById('profileForm').addEventListener('submit',async event=>{event.preventDefault();try{const result=await api('/profil',{method:'PUT',body:JSON.stringify({ime:document.getElementById('name').value,email:document.getElementById('email').value,telefon:document.getElementById('phone').value})});localStorage.setItem('ednevnik-user',JSON.stringify(result.korisnik));show('profileStatus','Podaci su sačuvani.');}catch(error){show('profileStatus',error.message);}});
+document.getElementById('passwordForm').addEventListener('submit',async event=>{event.preventDefault();const next=document.getElementById('newPassword').value;if(next!==document.getElementById('confirmPassword').value){show('passwordStatus','Nova lozinka i potvrda se ne poklapaju.');return;}try{await api('/profil/lozinka',{method:'PUT',body:JSON.stringify({staraLozinka:document.getElementById('oldPassword').value,novaLozinka:next})});event.target.reset();show('passwordStatus','Lozinka je promenjena.');}catch(error){show('passwordStatus',error.message);}});
+document.getElementById('setup2fa').addEventListener('click',async()=>{try{const result=await api('/profil/2fa/setup',{method:'POST',body:'{}'});document.getElementById('secret').textContent=result.secret;document.getElementById('setupPanel').hidden=false;show('twofaStatus','Unesi ključ u aplikaciju za autentifikaciju.');}catch(error){show('twofaStatus',error.message);}});
+document.getElementById('enable2fa').addEventListener('submit',async event=>{event.preventDefault();try{await api('/profil/2fa/enable',{method:'POST',body:JSON.stringify({code:document.getElementById('setupCode').value})});document.getElementById('setupPanel').hidden=true;document.getElementById('setup2fa').hidden=true;document.getElementById('twofaState').textContent='2FA je uključena za ovaj nalog.';document.getElementById('disable2fa').hidden=false;show('twofaStatus','2FA je uspešno uključena.');}catch(error){show('twofaStatus',error.message);}});
+document.getElementById('disable2fa').addEventListener('submit',async event=>{event.preventDefault();try{await api('/profil/2fa/disable',{method:'POST',body:JSON.stringify({lozinka:document.getElementById('disablePassword').value})});event.target.reset();document.getElementById('setup2fa').hidden=false;document.getElementById('disable2fa').hidden=true;document.getElementById('twofaState').textContent='2FA trenutno nije uključena.';show('twofaStatus','2FA je isključena.');}catch(error){show('twofaStatus',error.message);}});
+loadProfile();
+</script>
+<script src="common-header.js"></script>
+</body>
+</html>

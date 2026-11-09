@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Školski Kutak — demo | Imenik</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; background: #f4f6f9; color: #263445; font-family: Arial, sans-serif; }
+        header { background: #1a4a75; color: white; padding: 18px 24px; }
+        header h1 { margin: 0; font-size: 22px; }
+        nav { display: flex; gap: 8px; padding: 0 24px; background: white; border-bottom: 1px solid #dce3ea; overflow-x: auto; }
+        nav a { padding: 15px 16px; color: #4a5568; text-decoration: none; white-space: nowrap; border-bottom: 3px solid transparent; }
+        nav a:hover, nav a.active { color: #1a4a75; border-bottom-color: #1a4a75; }
+        main { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
+        .heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+        h2 { margin: 0 0 6px; color: #1a4a75; }
+        .muted { margin: 0; color: #718096; }
+        .search { width: min(100%, 300px); padding: 11px 13px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 15px; }
+        .student-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+        .student { position: relative; display: flex; align-items: center; gap: 14px; padding: 18px; background: white; border: 1px solid #e2e8f0; border-radius: 10px; box-shadow: 0 3px 10px rgba(26,74,117,.05); }
+        .avatar { width: 64px; height: 64px; flex: 0 0 64px; border-radius: 50%; object-fit: cover; background: #edf4fa; color: #1a4a75; display: grid; place-items: center; font-weight: bold; font-size: 20px; }
+        .student-info { min-width: 0; flex: 1; }
+        .student-name { color: #1a4a75; font-size: 17px; font-weight: bold; text-decoration: none; }
+        .student-name:hover { text-decoration: underline; }
+        .student-class { margin: 5px 0 10px; color: #718096; font-size: 13px; }
+        .badges { display: flex; flex-wrap: wrap; gap: 6px; }
+        .badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 7px; border-radius: 20px; background: #edf4fa; color: #1a4a75; font-size: 12px; }
+        .badge.alert { background: #fff0f0; color: #c53030; }
+        .upload { position: absolute; right: 12px; top: 12px; width: 30px; height: 30px; border: 0; border-radius: 50%; background: #edf4fa; color: #1a4a75; cursor: pointer; }
+        .upload input { display: none; }
+        .empty { padding: 24px; text-align: center; background: white; border-radius: 8px; color: #718096; grid-column: 1/-1; }
+        .demo { margin-top: 20px; font-size: 13px; color: #718096; }
+        @media (max-width: 600px) { header { padding: 16px; } nav { padding: 0 6px; } nav a { padding: 13px 10px; } main { margin-top: 22px; padding: 0 12px; } }
+    </style>
+    <link rel="stylesheet" href="common-header.css">
+</head>
+<body>
+    <header class="app-header"><h1 class="app-brand">Školski Kutak · demo</h1><div class="app-selectors"><select id="headerSchool" aria-label="Škola"></select><select id="headerYear" aria-label="Školska godina"></select><select id="headerClass" aria-label="Odeljenje"></select><select id="headerSubject" aria-label="Predmet"></select></div></header>
+    <nav class="app-nav" aria-label="Glavna navigacija">
+        <a href="dashboard.html">Početna</a><a href="imenik.html" class="active" aria-current="page">Imenik</a>
+        <a href="dnevnik-rada.html">Dnevnik rada</a><a href="raspored.html">Raspored</a><a href="administracija.html">Administracija</a>
+    </nav>
+    <main>
+        <div class="heading"><div><h2>Imenik učenika</h2><p class="muted">Odeljenje VIII-2 · Školska 2024/2025. godina</p></div><input class="search" id="search" type="search" placeholder="Pretraži učenike..." aria-label="Pretraži učenike"></div>
+        <section id="students" class="student-list" aria-live="polite"></section>
+        <p class="demo">Demonstracioni podaci se čuvaju samo u ovom pregledaču. Profilne slike se ne šalju na server.</p>
+    </main>
+    <script>
+        const KEY = 'ednevnik-demo';
+        const initial = [
+            { id: 'jovana-petrovic', name: 'Jovana Petrović', className: 'VIII-2', photo: '', grades: [{subject:'Srpski jezik',value:5},{subject:'Matematika',value:4}], notes: [], conduct: [], absences: [] },
+            { id: 'marko-ilic', name: 'Marko Ilić', className: 'VIII-2', photo: '', grades: [{subject:'Matematika',value:5}], notes: [], conduct: [], absences: [] },
+            { id: 'milica-jovanovic', name: 'Milica Jovanović', className: 'VIII-2', photo: '', grades: [], notes: [], conduct: [], absences: [] },
+            { id: 'luka-nikolic', name: 'Luka Nikolić', className: 'VIII-2', photo: '', grades: [{subject:'Biologija',value:2},{subject:'Istorija',value:1},{subject:'Srpski jezik',value:1}], notes: [], conduct: [], absences: [] },
+            { id: 'teodora-simic', name: 'Teodora Simić', className: 'VIII-2', photo: '', grades: [{subject:'Srpski jezik',value:4}], notes: [], conduct: [], absences: [] },
+            { id: 'lazar-otasevic', name: 'Lazar Otašević', className: 'VIII-2', photo: '', grades: [], notes: [], conduct: [], absences: [] },
+            { id: 'lara-tomic', name: 'Lara Tomić', className: 'VIII-2', photo: '', grades: [], notes: [], conduct: [], absences: [] }
+        ];
+        function loadData() {
+            let data;
+            try { data = JSON.parse(localStorage.getItem(KEY)); } catch (_) {}
+            if (!data || !Array.isArray(data.students)) data = { students: initial, lessons: [], subjects: ['Srpski jezik','Matematika','Biologija','Istorija','Engleski jezik','Fizika','Hemija','Geografija'], classes: ['VIII-2'], schools: [], users: [] };
+            data.students.forEach(s => { s.grades ||= []; s.notes ||= []; s.conduct ||= []; s.absences ||= []; s.photo ||= ''; });
+            localStorage.setItem(KEY, JSON.stringify(data));
+            return data;
+        }
+        let data = loadData();
+        const container = document.getElementById('students');
+        function escapeHtml(value) { return String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])); }
+        function render() {
+            const query = document.getElementById('search').value.trim().toLocaleLowerCase('sr');
+            container.replaceChildren();
+            const shown = data.students.filter(s => s.name.toLocaleLowerCase('sr').includes(query));
+            if (!shown.length) { container.innerHTML = '<p class="empty">Nema učenika koji odgovaraju pretrazi.</p>'; return; }
+            shown.forEach(student => {
+                const failing = student.grades.filter(g => Number(g.value) === 1).length;
+                const card = document.createElement('article'); card.className = 'student';
+                const safeName = escapeHtml(student.name);
+                const avatar = student.photo ? `<img class="avatar" src="${escapeHtml(student.photo)}" alt="Profilna slika ${safeName}">` : `<div class="avatar" aria-hidden="true">${escapeHtml(student.name.split(' ').map(part => part[0]).slice(0,2).join(''))}</div>`;
+                card.innerHTML = `${avatar}<div class="student-info"><a class="student-name" href="ucenik.html?id=${encodeURIComponent(student.id)}">${safeName}</a><p class="student-class">Odeljenje ${escapeHtml(student.className || 'VIII-2')}</p><div class="badges">${student.notes.length ? `<span class="badge" title="Beleške">💬 ${student.notes.length}</span>` : ''}${student.absences.length ? `<span class="badge" title="Izostanci">◷ ${student.absences.length}</span>` : ''}${failing >= 3 ? `<span class="badge alert" title="Tri ili više jedinica">⚠ ${failing}</span>` : ''}</div></div><label class="upload" title="Dodaj profilnu sliku">＋<input type="file" accept="image/*" aria-label="Dodaj profilnu sliku za ${safeName}"></label>`;
+                card.querySelector('input').addEventListener('change', event => {
+                    const file = event.target.files[0]; if (!file) return;
+                    if (!file.type.startsWith('image/')) { alert('Izaberite slikovnu datoteku.'); return; }
+                    if (file.size > 1500000) { alert('Slika je prevelika. Izaberite sliku manju od 1,5 MB.'); return; }
+                    const reader = new FileReader(); reader.onload = () => { student.photo = reader.result; localStorage.setItem(KEY, JSON.stringify(data)); render(); }; reader.readAsDataURL(file);
+                });
+                container.appendChild(card);
+            });
+        }
+        document.getElementById('search').addEventListener('input', render);
+        render();
+    </script>
+    <script src="common-header.js"></script>
+</body>
+</html>
