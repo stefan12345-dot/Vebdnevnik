@@ -105,7 +105,15 @@ async function initDB() {
   `);
 
   // Bezbedna migracija postojece Turso baze:
-  // CREATE TABLE IF NOT EXISTS ne menja kolone vec kreiranih tabela.
+  // Provera i dodavanje kolone 'lozinka' ako tabela korisnici vec postoji od ranije bez nje
+  const { rows: proveriLozinku } = await db.execute('PRAGMA table_info(korisnici)');
+  const sveTrenutneKolone = new Set(proveriLozinku.map(k => k.name));
+  
+  if (!sveTrenutneKolone.has('lozinka')) {
+    await db.execute("ALTER TABLE korisnici ADD COLUMN lozinka TEXT NOT NULL DEFAULT ''");
+    console.log('🔧 Migracija: dodata kolona korisnici.lozinka');
+  }
+
   // Starija verzija baze moze imati korisnici tabelu bez kolone 'ime'.
   const { rows: korisniciKolone } = await db.execute('PRAGMA table_info(korisnici)');
   const postojeceKolone = new Set(korisniciKolone.map(kolona => kolona.name));
@@ -201,10 +209,8 @@ async function initDB() {
       args: ['Administrator', adminUsername, passwordHash, 'Administrator'],
     });
   } else if (userCount[0].cnt === 0) {
-    console.warn('⚠️ Baza nema naloge. Podesite INIT_ADMIN_USERNAME i INIT_ADMIN_PASSWORD da biste napravili administratora.');
+    console.warn('⚠️ Baza nema naloge. Podesite INIT_ADMIN_USERNAME i INIT_ADMIN_PASSWORD za početnog admina.');
   }
-
-  console.log('✅ Baza inicijalizovana.');
 }
 
 module.exports = { db, initDB };
